@@ -1,0 +1,365 @@
+body{	
+	font-family: Calibri, kalpurush !important;
+	max-width:900px; 
+	font-size: 17px; 
+	color: #000; 
+	background-color:#fafafa;
+	margin-top:10px;
+	margin-bottom:10px;
+	margin: 0 auto;
+	padding: 3px;
+	border: 0px solid #a2a2a2;
+}
+
+html * {
+    font-family: Calibri, kalpurush !important;
+}
+	
+.div {
+	border-radius:4px;
+	padding: 8px; 
+	font-weight: bold;
+	background-color:#047448;
+	font-size: 20px;color:#fff; 
+}
+
+.div2 {
+	border-radius:4px;
+	padding: 6px; 
+	font-weight: bold;
+	background-color:#047448;
+	color:#fff;}
+
+hr {
+	margin-top:2px;
+	margin-bottom:2px;
+	border:1px dotted #a5a6a8;  
+  }
+
+table {
+	border-collapse: collapse;
+	font-family: Calibri;
+	border-radius:4px;
+}
+
+r {
+    color: #db0000; 
+  }  
+  
+a {
+	text-decoration: none; 
+	color: #991a22;
+}
+
+a:hover { 
+  	color: red;
+ }
+
+
+.phdr{  
+	 background:#047448;
+	 padding:5px;
+	 color:#fff; 
+	 border-radius:4px;
+	 text-align:center;
+	 font-weight: bold;
+  
+  }
+ 
+.phdr2{    	
+	  background:#047448;
+	  padding:5px;
+	  color:#fff;
+	  text-align:center;
+	  border-radius:4px;
+  }
+
+.phdr3 {
+	background:url(https://asikurbd.github.io/Image-Upload/grass.png)right center no-repeat,#6bae00;
+	padding: 5px;
+	display: block;
+	border-bottom:1px solid red;
+	font-weight: bold;
+	font-size: 14px;
+	margin:0 0 10px 0;
+	font-weight: bold;
+	text-transform:uppercase;
+	color:#fffffe;
+	text-shadow:#111 1px 1px 1px;
+}
+
+
+.cpy	{
+	padding:4px;
+	background-color:#5d2091;
+    border:2px dashed #fff; 
+    display: block;
+	color: #fff;
+	font-size: 20px;
+	margin: 0px;
+	text-align: center;
+    border-radius:4px; 
+    font-weight: bold;
+}
+.hed	{
+	padding:5px;
+	background-color:#056f02;
+  	border:2px dashed #fff; 
+  	display: block;
+	color: #fff;
+	font-size: 24px;
+	margin: 0px;
+	text-align: center;
+  	border-radius:4px; 
+  	font-weight: bold; 
+}
+.men {
+  	border-left:2px dashed #FFFFFF; 
+  	border-right:2px dashed #FFFFFF; 
+  	padding: 5px;
+}  
+.ntc {    
+  	color: red;
+  	border:1px solid red;
+  	border-radius:4px; 
+  	padding:1px;
+  	text-align: center;
+  	margin-top: 0px;
+  	margin-bottom: 2px;  
+  }
+
+ul {
+    margin: 0; 
+    padding: 0;
+  	list-style-type: none;
+  	margin-bottom: 5px; 
+} 
+li {
+    border-bottom: 1px solid #cbcccd; 
+  	padding-bottom:4px; 
+  	padding-top:4px; 
+}  
+.post-body img {
+    max-width: 90% !important;
+    height: auto !important;
+} 
+
+input[type=submit] {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 6px 10px 6px 10px;
+    text-decoration: none;
+    cursor: pointer;
+}  
+  
+.chatt-up{background-color:#F1F4F9;border:1px solid #7c0000;line-height:1.3em;margin:4px;padding:5px;position:relative;text-align:left;border-radius:4px}
+.chatt-up:after,.chatt-up:before{bottom:100%;border:solid transparent;content:" ";height:0;width:0;position:absolute;pointer-events:none}
+.chatt-up:after{border-color:transparent transparent #7c0000 transparent;border-style:solid;border-width:10px;height:0;width:0;position:absolute;top:-19px;left:10px}
+.chatt-up:before{border-color:transparent transparent #7c0000 transparent;border-style:solid;border-width:10px;height:0;width:0;position:absolute;top:-21px;left:10px}  
+  
+img{
+    max-width: 90% !important;
+  	border:0;
+  	height:auto;
+}
+
+
+.pagination{display:inline-block;padding-left:0;margin:10px;border-radius:4px}
+.pagination>li{display:inline}
+.pagination>li>a,.pagination>li>span{position:relative;float:left;padding:6px 12px; margin-left:-1px;line-height:1.42857143;color:#337ab7;
+                                     text-decoration:none;background-color:#fff;border:1px solid #ddd}
+.pagination>li:first-child>a,
+.pagination>li:first-child>span{margin-left:0;border-top-left-radius:4px;border-bottom-left-radius:4px}.pagination>li:last-child>a,
+.pagination>li:last-child>span{border-top-right-radius:4px;border-bottom-right-radius:4px}.pagination>li>a:focus,
+.pagination>li>a:hover,.pagination>li>span:focus,.pagination>li>
+span:hover{z-index:2;color:#23527c;background-color:#eee;border-color:#ddd}.pagination>.active>a,.pagination>.active>a:focus,
+.pagination>.active>a:hover,.pagination>.active>span,.pagination>.active>span:focus,
+.pagination>.active>span:hover{z-index:3;color:#fff;cursor:default;background-color:#337ab7;border-color:#337ab7}
+.pagination>.disabled>a,.pagination>.disabled>a:focus,
+.pagination>.disabled>a:hover,.pagination>.disabled>span,.pagination>.disabled>span:focus,
+.pagination>.disabled>span:hover{color:#777;cursor:not-allowed;background-color:#fff;border-color:#ddd}
+.pagination-lg>li>a,.pagination-lg>li>span{padding:10px 12px;font-size:14px;}
+
+.as1 {
+    background:#e8f8fb;
+    padding:5px;
+    display:block;
+    border-bottom:1px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+}
+ar {
+    background:#e8f8fb;
+    padding:5px;
+    display:block;
+    border-bottom:1px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+}
+ar2 {
+    background:#f7aaed;
+    padding:5px;
+    display:block;
+    border-bottom:1px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+}
+t {
+    background:red;
+    padding: 4px;
+    color: white;
+    text-shadow: none;
+    font-weight: bold;
+}
+d {
+    background:#5d1394;
+    padding: 4px;
+    color: white;
+    text-shadow: none;
+    font-weight: bold;
+}
+d1 {
+    background:#e9ef3f;
+    padding: 4px;
+    color: black;
+    text-shadow: none;
+    font-weight: bold;
+}
+d2 {
+    background:#ed3fef;
+    padding: 4px;
+    color: white;
+    text-shadow: none;
+    font-weight: bold;
+}
+d3 {
+    background:#d83c1d;
+    padding: 4px;
+    color: white;
+    text-shadow: none;
+    font-weight: bold;}
+k {
+    border: 1px solid #d55274;
+    padding: 4px;
+    border-radius: 2px;
+    text-shadow: none;
+    font-weight: bold;
+}
+r {
+    border: 0px solid #d55274;
+    padding: 0px; border-radius: 0px;
+    color: red;
+}
+r1 {
+    border: 0px solid #ce6c0c;
+    padding: 0px;
+    border-radius: 0px;
+    color: #ce6c0c;
+}
+g {
+    border: 0px solid #d55274;
+    padding: 0px;
+    border-radius: 0px;
+    color: green;
+}
+p1 {
+    border: 0px solid #cb23e9;
+    padding: 0px;
+    border-radius: 0px;
+    color: #cb23e9;
+}
+
+#p-a1 {
+    display: inline-block;
+    background-image: url(https://asikurbd.github.io/wi/download.gif);
+    background-size: 100%100%;
+    width: 170px;
+    height: 70px;
+    display:block;
+    text-align: center;
+}  
+  
+#p-a2 {
+    display: inline-block;
+    background-image: url(https://asikurbd.github.io/wi/up_down_look.gif);
+    background-size: 100%100%;
+    width: 100px;
+    height: 40px;
+    display:block;
+    text-align: center;
+}  
+
+#i-ic {
+    display: inline-block;
+    background-image: url(https://asikurbd.github.io/wi/pz1.png);
+    width: 15px;
+    height: 15px;
+    overflow:hidden;
+    text-decoration: none; 
+} 
+  
+.head {
+    background: url(https://asikurbd.github.io/Image-Upload/line.png) repeat-x top center;
+    margin:0 auto;
+    padding-top:7px;
+    overflow:hidden;
+}  
+
+* {
+	box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+	float: left;
+	width: 70%;
+	padding: 3px;
+	border-right: 1px solid #a6a6a6;
+	border-bottom: 1px solid #a6a6a6;
+}
+
+/* Create two equal columns that floats next to each other */
+.column2 {
+	float: left;
+	width: 30%;
+	padding-left: 9px;
+	padding-right: 3px;
+	border: 0px solid black;
+}
+
+/* Clear floats after the columns */
+.row:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 850px) {
+	.column {
+		width: 100%;
+	}
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 850px) {
+	.column2 {
+		width: 100%;
+	}
+}
+
+th, td {
+  padding: 5px;
+}
+
+.imgcss {
+  border: 1px solid #80ba7a;
+  border-radius: 4px;
+  padding: 5px;
+  height:70px;
+  width: 90px;
+  margin:6px;
+}
+
