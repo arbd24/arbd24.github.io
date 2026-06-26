@@ -11,8 +11,20 @@ body{
 	border: 0px solid #a2a2a2;
 }
 
-html * {
-    font-family: Calibri, kalpurush !important;
+@font-face {
+    font-family: 'calibri';
+    src: url('https://arbd24.github.io/img/font/calibri.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'kalpurush';
+    src: url('https://arbd24.github.io/img/font/kalpurush.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
 	
 .div {
