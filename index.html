@@ -1,5 +1,411 @@
-<title>Redirecting</title>
 
-<script type="text/javascript">
-window.location ="https://arbd.top";
-</script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ArBD</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="ibyrjfhckxjgrxksy7cc311q3yv0yo" name="facebook-domain-verification"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="/w-files/icon/dna.png" rel="icon" type="image/x-icon"/>
+    <link href="/blog/css/css.css" rel="stylesheet" type="text/css"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f3f6; color: #222; padding: 10px; }
+        .container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); padding: 20px; }
+
+        /* Header */
+        .header-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 0 15px; border-bottom: 2px solid #eee; margin-bottom: 10px; }
+        .logo-section img { height: 62px; }
+        .social-icons { display: flex; gap: 10px; }
+        .social-icons a img { width: 32px; height: 32px; transition: 0.2s; }
+        .social-icons a img:hover { transform: scale(1.1); }
+
+        /* Navbar */
+        .menu-icon { display: none; font-size: 28px; cursor: pointer; padding: 5px 10px; background: #f0f4fa; border-radius: 6px; margin-bottom: 10px; }
+        .custom-nav { list-style: none; display: flex; flex-wrap: wrap; background: #0a2647; border-radius: 8px; padding: 0 10px; margin-bottom: 15px; }
+        .custom-nav li { position: relative; }
+        .custom-nav li a { display: block; color: #fff; padding: 12px 18px; text-decoration: none; font-weight: 500; font-size: 15px; transition: 0.2s; }
+        .custom-nav li a:hover { background: #1e6f9f; border-radius: 6px; }
+        .dropdown-content { display: none; position: absolute; background: #fff; min-width: 200px; box-shadow: 0 8px 18px rgba(0,0,0,0.12); border-radius: 8px; z-index: 99; top: 100%; left: 0; overflow: hidden; }
+        .dropdown-content a { color: #1e2b3a !important; padding: 12px 18px !important; display: block; border-bottom: 1px solid #f0f0f0; }
+        .dropdown-content a:hover { background: #e9f0f9 !important; border-radius: 0 !important; }
+        .dropdown:hover .dropdown-content { display: block; }
+
+        /* Search */
+        .search-form { margin: 10px 0 15px; }
+        .search-form input { width: 100%; padding: 12px 18px; border: 1px solid #d0dbe8; border-radius: 50px; font-size: 15px; outline: none; transition: 0.2s; background: #fafcff; }
+        .search-form input:focus { border-color: #1e6f9f; box-shadow: 0 0 0 3px rgba(30,111,159,0.1); }
+
+        /* Two column layout */
+        .two-column-layout { display: flex; gap: 25px; flex-wrap: wrap; }
+        .left-column { flex: 2; min-width: 300px; }
+        .right-column { flex: 1; min-width: 260px; }
+
+        /* Slideshow */
+        .slideshow img { width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; object-fit: cover; }
+
+        /* Hot posts / All posts */
+        .blog-item { display: flex; align-items: center; background: #fff; border: 1px solid #e9eef5; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.15s; }
+        .blog-item:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+        .blog-item .thumbnail { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 15px; border: 1px solid #eee; }
+        .blog-item a { text-decoration: none; color: #0a2647; font-weight: 600; font-size: 17px; }
+        .blog-item a:hover { color: #1e6f9f; }
+        .blog-item .date { color: #6b7c8f; font-size: 13px; margin-top: 5px; }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; gap: 6px; margin: 20px 0 10px; flex-wrap: wrap; }
+        .pagination a, .pagination span { display: inline-block; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; background: #f0f4fa; color: #0a2647; border: 1px solid #d8e2ee; }
+        .pagination .current { background: #1e6f9f; color: #fff; border-color: #1e6f9f; }
+        .pagination .disabled { opacity: 0.5; }
+        .pagination a:hover { background: #1e6f9f; color: #fff; }
+
+        /* Right column */
+        .phdr { background: #0a2647; color: #fff; padding: 10px 15px; border-radius: 6px; font-weight: 600; font-size: 16px; margin: 20px 0 12px; }
+        .right-column hr { border: 0; border-top: 1px solid #e7eef6; margin: 6px 0; }
+        .right-column a { color: #0a2647; text-decoration: none; font-weight: 500; font-size: 14px; }
+        .right-column a:hover { color: #1e6f9f; }
+        .right-column img { vertical-align: middle; margin-right: 6px; }
+        .right-column center { margin: 10px 0; font-size: 14px; color: #1e3a5a; }
+        .right-column .inote { background: #e9f0f9; padding: 14px 16px; border-radius: 10px; margin: 10px 0; font-style: italic; font-size: 14px; line-height: 1.6; border-left: 5px solid #1e6f9f; }
+        .right-column .inote br { display: block; margin-bottom: 4px; }
+
+        /* Footer */
+        .footer-container { margin-top: 30px; padding: 20px 0 10px; border-top: 2px solid #eee; text-align: center; font-size: 14px; color: #6b7c8f; }
+        .footer-container a { color: #0a2647; text-decoration: none; font-weight: 500; }
+        .footer-container a:hover { color: #1e6f9f; }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .two-column-layout { flex-direction: column; }
+            .menu-icon { display: block; }
+            .custom-nav { display: none; flex-direction: column; width: 100%; padding: 5px 0; }
+            .custom-nav.active { display: flex; }
+            .custom-nav li { width: 100%; }
+            .custom-nav li a { padding: 12px 18px; border-bottom: 1px solid #1e3a5a; }
+            .dropdown-content { position: static; box-shadow: none; border-radius: 0; background: #1e3a5a; }
+            .dropdown-content a { color: #fff !important; border-bottom: 1px solid #2a4d6e; }
+            .dropdown-content a:hover { background: #2a4d6e !important; }
+            .header-container { flex-direction: column; align-items: flex-start; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ================= HEADER ================= -->
+        <div class="header-container">
+            <div class="logo-section">
+                <a href="/index.php" style="display: block">
+                    <img src="/blog/img/logo.png" height="62px" alt="Logo">
+                </a>
+            </div>
+            <div class="social-icons">
+                <a href="http://gemini.google.com" target="_blank"><img alt="Gemini" src="/blog/img/gemi.png"/></a>
+                <a href="http://facebook.com" target="_blank"><img alt="Facebook" src="/blog/img/facebook.png"/></a>
+                <a href="https://web.telegram.org/k" target="_blank"><img alt="Telegram" src="/blog/img/tele.png"/></a>
+                <a href="https://web.whatsapp.com" target="_blank"><img alt="whatsapp" src="/blog/img/wapp.png"/></a>
+                <a href="https://www.youtube.com" target="_blank"><img alt="Youtube" src="/blog/img/youtube.png"/></a>
+            </div>
+        </div>
+
+        <!-- ================= NAVBAR ================= -->
+        <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        <ul class="custom-nav" id="navbar">
+            <li><a href="/index.php">Home</a></li>
+            <li><a href="/b.html">Bookmark</a></li>
+            <li><a href="/v.php?p=6">Software</a></li>
+            <li><a href="/v.php?p=13">Exam Results</a></li>
+            <li><a href="/v.php?p=68">Link List</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">Menu</a>
+                <div class="dropdown-content">
+                    <a href="/my/nu_all_notice.php" target="_blank">NU All Notice</a>
+                    <a href="/v.php?p=5">Online Converter</a>
+                    <a href="/v.php?p=14">Movie Download</a>
+                    <a href="/v.php?p=8">FTP Server</a>
+                    <a href="/ar-files/my-img" target="_blank">Gallery</a>
+                    <a href="https://cp1.privatedns.top:1551/webmail/?/MobileVersion" target="_blank">WebMail</a>
+                    <a href="/blog/admin-cp.php">Login</a>
+                </div>
+            </li>
+        </ul>
+
+        <script>
+            function toggleMenu() {
+                var x = document.getElementById("navbar");
+                if (x.className === "custom-nav") {
+                    x.className += " active";
+                } else {
+                    x.className = "custom-nav";
+                }
+            }
+        </script>
+
+        <!-- ================= SEARCH ================= -->
+        <form method="get" class="search-form">
+            <input type="text" name="search" id="search" placeholder="Search here..." value="">
+        </form>
+
+        <!-- ================= 2-COLUMN LAYOUT ================= -->
+        <div class="two-column-layout">
+            <!-- ===== LEFT COLUMN ===== -->
+            <div class="left-column">
+
+                <!-- Slideshow -->
+                <style>.max-width-750 { max-width: 750px; }</style>
+                <link rel="Stylesheet" href="blog/css/square1.css" type="text/css" media="all" />
+                <div class="slideshow">
+                    <img src="blog/img/slide/1.jpg" alt=" " class="max-width-750">
+                    <img src="blog/img/slide/2.jpg" alt=" " class="max-width-750">
+                </div>
+                <script src="blog/js/square1.min.js"></script>
+                <script src="blog/js/square1.js"></script>
+                <script src="blog/js/slide.js"></script>
+                <br>
+
+                <!-- Hot Posts Section -->
+                <div>
+                    <h3 style="margin-top: 0; color: #856404; border-bottom: 2px solid #ffc107; padding-bottom: 10px;">
+                        <a href="#down"><i class="fas fa-fire" style="color: #ff6b6b;"></i></a> Hot Posts
+                    </h3>
+
+                    <!-- Hot Post 1 -->
+                    <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                        <div style="display: flex; align-items: center;">
+                            <img src="https://arbd.top/w-files/logo/gemini.jpg" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd;">
+                            <div style="flex: 1;">
+                                <a href="v.php?p=60" style="text-decoration: none; display: block; margin-bottom: 8px;">Gemini Ai Photo Editing Prompt</a>
+                                <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 21 Apr, 2026</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hot Post 2 -->
+                    <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                        <div style="display: flex; align-items: center;">
+                            <img src="https://i.postimg.cc/rySMyg2s/2026-01-07-124951.png" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd;">
+                            <div style="flex: 1;">
+                                <a href="v.php?p=55" style="text-decoration: none; display: block; margin-bottom: 8px;">All Class NCTB Books 2026</a>
+                                <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 07 Jan, 2026</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hot Post 3 -->
+                    <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                        <div style="display: flex; align-items: center;">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi1zBRr5kmF4mYXtXjQDvT3VpkTYWDz-wIFqG90T6WLQBugEZbhc7U0fuCy-fwslCaS2cNJqfwrJNROloU1nf5m0QefulScB2ffgI7hGO1Ozu8ENFRVHzujksL0V8qaFuX6X-lC4IPHSYQ/s200/Screen-Shot-2016-08-29-at-11.48.08.png" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd;">
+                            <div style="flex: 1;">
+                                <a href="v.php?p=32" style="text-decoration: none; display: block; margin-bottom: 8px;">Most important Bangla And English font download</a>
+                                <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 06 Jan, 2026</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hot Post 4 -->
+                    <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                        <div style="display: flex; align-items: center;">
+                            <img src="https://i.postimg.cc/Gt6M4Wm9/QTbFeh.png" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd;">
+                            <div style="flex: 1;">
+                                <a href="v.php?p=19" style="text-decoration: none; display: block; margin-bottom: 8px;">IDM internet Download Manager 6.42.45 Crack</a>
+                                <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 06 Jan, 2026</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Posts -->
+                <h3 style="margin-top: 0; color: #856404; border-bottom: 2px solid #5307ff; padding-bottom: 10px;">
+                    <i class="fas fa-chart-line" style="color: #00cc66;"></i> All Posts
+                </h3>
+
+                <!-- Blog Item 1 -->
+                <div class="blog-item">
+                    <img src="https://i.postimg.cc/Qt3ywhhj/2026-07-06-215609.jpg" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=62">Chrome And Brave All Extensions</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 06 Jul, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Blog Item 2 -->
+                <div class="blog-item">
+                    <img src="https://i.postimg.cc/wTRgPmYM/image.png" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=61">মানসিক ভাবে ভালো থাকার উপায়।</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 10 May, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Blog Item 3 -->
+                <div class="blog-item">
+                    <img src="https://i.postimg.cc/NfkfkRBz/656473797.jpg" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=59">আমার কাছে ৩০ লাখ টাকা — কোথায় ইনভেস্ট করবো? সঞ্চয়পত্র, জমি নাকি স্বর্ণ?</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 29 Mar, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Blog Item 4 -->
+                <div class="blog-item">
+                    <img src="https://i.postimg.cc/XJ07BjVQ/2026-02-28-122108.jpg" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=58">হঠাৎ প্যানিক অ্যাটাক (আতঙ্কের আক্রমণ) ও করণীয়</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 28 Feb, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Blog Item 5 -->
+                <div class="blog-item">
+                    <img src="https://i.postimg.cc/DZ0MMgRz/17-02-26.png" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=57">রোজা কেন প্রতি বছর ভিন্ন তারিখে শুরু হয়?</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 17 Feb, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Blog Item 6 -->
+                <div class="blog-item">
+                    <img src="http://4.bp.blogspot.com/_n0kOLTsDBsw/SZQZjV-YD7I/AAAAAAAAAvA/0Xc4mN1Sn04/s400/abraham-lincoln-picture.jpg" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=56">পিতা যেন হয় এমনই....।</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 17 Jan, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Blog Item 7 -->
+                <div class="blog-item">
+                    <img src="https://3.bp.blogspot.com/-IF1ptHSr3lg/V0Pz2_fHAnI/AAAAAAAABGA/_jBQ2EswSzIWZ4WErqLf64iQCS63PL-EwCLcB/s1600/The-dead-man.jpg" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=54">জানাযার নামাজ পড়ার নিয়ম, যারা জানেন না তাদের জন্য।</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 06 Jan, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Blog Item 8 -->
+                <div class="blog-item">
+                    <img src="http://3.bp.blogspot.com/_-BH0RfUWDMg/S7dr33DedzI/AAAAAAAAEek/Ze1Ax7ZiIxw/s300/fantastic+MF.jpg" class="thumbnail" alt="Thumbnail">
+                    <div>
+                        <a href="v.php?p=53">পড়লে জানবেন না পড়লে কিচ্ছু হবে না, সচেতনতা মূলক পোস্ট</a>
+                        <div style="margin: 8px 0; color: #666; font-size: 14px;"><i class="far fa-calendar-alt"></i> 06 Jan, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <span class="disabled">&laquo;</span>
+                    <span class="current">1</span>
+                    <a href="?page=2">2</a>
+                    <a href="?page=3">3</a>
+                    <a href="?page=4">4</a>
+                    <a href="?page=5">5</a>
+                    <a href="?page=6">6</a>
+                    <a href="?page=2">&raquo;</a>
+                </div>
+
+                <div style="text-align: center; color: #666; margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 6px; border: 1px solid #ddd;">
+                    Showing 1 - 8 of 41 blogs
+                </div>
+            </div>
+
+            <!-- ===== RIGHT COLUMN ===== -->
+            <div class="right-column">
+                <center><img src="blog/img/arbd2.png" width="70%"></center>
+
+                <div class="phdr">Today Date</div>
+                <center>
+                    <font color="indigo">
+                        আজ
+                        <div id="englishDate"></div>
+                        <div id="banglaDate"></div>
+                        <div id="hijriDate"></div>
+                        <script src="blog/js/bangla-english-date.js"></script>
+                    </font>
+                    <p id="p-a2"></p>
+                    Visit My Protfolio<br />
+                    <a href="/portfolio" target="_blank">Asikur Rahman</a>
+                </center>
+
+                <div class="phdr">Link Pages</div>
+                <div id="down"></div>
+
+                <img src="w-files/icon/s60.png"/> <a href="/url" target="_blank">Short URL</a><hr>
+                <img src="w-files/icon/bk.png"/> <a href="https://arbd99.blogspot.com/" target="_blank">ArBD99</a><hr>
+                <img src="w-files/icon/nt8.png"/> <a href="blog/page/Blank_PP_Size_Photo.php" target="_blank">Blank PP Photo</a><hr>
+                <img src="w-files/icon/cam.png"/> <a href="photo-convert/" target="_blank">Photo Resizer</a><hr>
+                <img src="w-files/icon/sat2.png"/> <a href="ls" target="_blank">Link Save</a><hr>
+                <img src="w-files/icon/xml.png"/> <a href="ts" target="_blank">Text Save</a><hr>
+                <img src="w-files/icon/gm.png"/> <a href="https://mail.google.com" target="_blank">Gmail.com</a><hr>
+                <img src="w-files/icon/nt1.png"/> <a href="https://chat.deepseek.com" target="_blank">Deepseek</a><hr>
+                <img src="w-files/icon/v3.png"/> <a href="https://postimages.org" target="_blank">Postimages</a><hr>
+                <img src="w-files/icon/grwpc.png"/> <a href="/font-converter/index.html" target="_blank">Font Converter</a><hr>
+                <img src="w-files/icon/gs3.png"/> <a href="https://www.google.com" target="_blank">Google.com</a><hr>
+                <img src="w-files/icon/yt1.png"/> <a href="https://yt1s.biz" target="_blank">YT Downloader</a><hr>
+                <img src="w-files/icon/gs.png"/> <a href="https://translate.google.com/?sl=bn&tl=en&op=translate" target="_blank">Google Translate</a><hr>
+                <img src="w-files/icon/bk.png"/> <a href="/e-bill-calcu" target="_blank">E-Bill Calculate</a><hr>
+                <img src="w-files/icon/grph.png"/> <a href="/dpc" target="_blank">Dead Pixcel Check</a><hr>
+                <img src="w-files/icon/x.png"/> <a href="https://accounts.google.com/Logout?ec=GAdAwAE&hl=en" target="_blank">Gmail Out</a><hr>
+                <img src="w-files/icon/flop.png"/> <a href="https://www.terabox.com/main?category=all" target="_blank">Terabox</a><hr>
+                <img src="w-files/icon/info3.png"/> <a href="" target="_blank">Blank</a><hr>
+
+                <div class="phdr">Page Categories</div>
+
+                <img src="blog/img/btagr.png" /> <a href='v.php?p=17'>Important Websites</a><hr>
+                <img src="blog/img/prfstr.png" /> <a href='v.php?p=18'>My Bookmarks</a><hr>
+                <img src="blog/img/sat1.png" /> <a href='v.php?p=16'>My Project Work</a><hr>
+                <img src="blog/img/admn.png" /> <a href='v.php?p=15'>Social Media List</a><hr>
+                <img src="blog/img/app.png" /> <a href='v.php?p=14'>Movie Download</a><hr>
+                <img src="blog/img/aol1.png" /> <a href='v.php?p=13'>BD All XM Result</a><hr>
+                <img src="blog/img/fla.png" /> <a href='v.php?p=9'>Games Download</a><hr>
+                <img src="blog/img/flvl.png" /> <a href='v.php?p=8'>FTP Server List</a><hr>
+                <img src="blog/img/ir22.png" /> <a href='/tv'>Live TV List</a><hr>
+                <img src="blog/img/dna.png" /> <a href='v.php?p=6'>PC Software</a><hr>
+                <img src="blog/img/set2.png" /> <a href='v.php?p=5'>Online Converter</a><hr>
+                <img src="blog/img/pnt.png" /> <a href='v.php?p=4'>Others List</a><hr>
+
+                <div style="text-align: left;">
+                    <div class="phdr">Blog Categories</div>
+
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Computer+Tips">Computer Tips</a><hr>
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Educative+Stories">Educative Stories</a><hr>
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Health+Tips">Health Tips</a><hr>
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Hot+Post">Hot Post</a><hr>
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Islam+And+Life">Islam And Life</a><hr>
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Others">Others</a><hr>
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Study+Center">Study Center</a><hr>
+                    <img src="w-files/icon/flgr.png"/> <a href="v.php?category=Technology">Technology</a><hr>
+
+                    <div class='phdr'>Islamic Quotes</div>
+
+                    <div class='inote'>
+                        “দারিদ্র্যের আক্রমণ থেকে নিজেকে রক্ষা করো। কেননা ইহার অভিশাপ মানুষকে কাফেরে পরিনত করে।”<br>
+                        —আল হাদিস
+                    </div>
+
+                    <center style="padding:5px;"></center>
+
+                    <div class='inote'>
+                        “কখনো কখনো আল্লাহ তা’আলা আমাদের ভোগান্তিতে ফেলেন শুধু এজন্যই যে আমরা যেন তাকে স্মরণ করি।”<br>
+                        —[ড. বিলাল ফিলিপ্স]<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= FOOTER ================= -->
+        <div class="footer-container">
+            <p>&copy; Asikur Rahman, All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 13px; font-weight: bold;">
+                <a href="/index.php" style="margin: 0 10px;">Home</a> |
+                <a href="/v.php?p=70" style="margin: 0 10px;">About</a> |
+                <a href="/v.php?p=71" style="margin: 0 10px;">Contact</a> |
+                <a href="/v.php?p=72" style="margin: 0 10px;">Privacy Policy</a>
+            </p>
+        </div>
+
+    </div>
+</body>
+</html>
