@@ -1,0 +1,123 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Calibri', 'Kalpurush', 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px 16px 40px 16px;
+        }
+
+        /* main grid container: keeps everything centered and responsive */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 28px 32px;
+            margin: 0 auto;
+        }
+
+        /* each bookmark card - perfect centering of icon + text */
+        .image-item {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;      /* horizontal center of flex children */
+            justify-content: center;  /* vertical alignment if needed */
+            width: 90px;
+            transition: transform 0.2s ease, opacity 0.2s;
+            cursor: pointer;
+        }
+
+        .image-item:hover {
+            transform: translateY(-4px);
+        }
+
+        /* link resets: block to maintain click area */
+        .image-item a {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* image wrapper + image styling: perfect circle and consistent size */
+        .image-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            border: 1px solid #e2e8f0;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .image-item a:hover img {
+            border-color: #3c763d;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* name/text label: centered exactly below image, same width */
+        .name {
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: center;
+            line-height: 1.3;
+            letter-spacing: 0.3px;
+            background: transparent;
+            max-width: 100%;
+            word-break: keep-all;
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            padding: 0 2px;
+        }
+
+        /* responsive: on very small devices, reduce gap and image size slightly */
+        @media (max-width: 560px) {
+            .container {
+                gap: 20px 20px;
+            }
+            .image-item {
+                width: 74px;
+            }
+            .image-item img {
+                width: 56px;
+                height: 56px;
+            }
+            .name {
+                font-size: 12px;
+                margin-top: 8px;
+                white-space: normal;
+                word-break: keep-all;
+                overflow: visible;
+                text-overflow: clip;
+            }
+        }
+
+        /* optional: extra smoothness */
+        a, .image-item {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* small decorative header or just spacing */
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 1.7rem;
+            font-weight: 500;
+            color: #2d3e50;
+            letter-spacing: -0.3px;
+            display: none;
+        }
