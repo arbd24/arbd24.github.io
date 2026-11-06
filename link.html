@@ -1,1 +1,50 @@
-a
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ArBD</title>
+    <div data-include="components/head-meta.html"></div>
+</head>
+<body>
+    <div class="container">
+        <!-- Header include -->
+        <div data-include="components/header.html"></div>
+
+        <!-- 2-column layout -->
+        <div class="two-column-layout">
+            <!-- Left Column: Main Content (BODY) -->
+            <div class="left-column">
+                <div class="blog-view">
+                    <div class="blog-header">
+                        
+<center><h1 class="blog-title-view">Link List</h1></center>
+                        
+                    </div>
+                    <div class="blog-content-view">                                   
+          
+                        <div id="dataContainer"></div>
+                        <div class="page-info" id="pageInfo"></div>
+                        <div class="pagination" id="pagination"></div>
+
+ <!-- ____________________________________ -->
+
+
+<div data-include="components/pages/link.html"></div>
+
+                        
+ <!-- ____________________________________ -->  
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar include -->
+            <div data-include="components/sidebar.html"></div>
+        </div>
+
+        <!-- Footer include -->
+        <div data-include="components/footer.html"></div>
+    </div>
+
+    <!-- Include engine -->
+    <script src="assets/include.js"></script>
+</body>
+</html>
