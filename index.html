@@ -1,5 +1,57 @@
-<title>Redirecting</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Link List - ArBD</title>
+    <div data-include="components/head-meta.html"></div>
+</head>
+<body>
+    <div class="container">
+        <!-- Header include -->
+        <div data-include="components/header.html"></div>
 
-<script type="text/javascript">
-window.location ="https://arbd24.github.io/link-list.html";
-</script>
+        <!-- 2-column layout -->
+        <div class="two-column-layout">
+            <!-- Left Column: Main Content (BODY) -->
+            <div class="left-column">
+                <div class="blog-view">
+                    <div class="blog-header">
+                        <center><h1 class="blog-title-view">Link List</h1></center>
+                        <span class="blog-category-view">Category: Pages</span>
+                        <div class="calle">
+                            <i class="far fa-calendar-alt"></i> 15 Jul, 2026
+                        </div>
+                    </div>
+
+                    <div class="blog-content-view">
+                        <style>
+                            .blog-header, .blog-title-view, .blog-category-view, .calle {
+                                display: none !important;
+                            }
+                        </style>
+
+                        <center><a href="https://arbd99.blogspot.com/1vGn">Source</a></center>
+                        <a id="clearBtn" style="display:none;">Link List </a>
+
+                        <center><div class="count" id="countDisplay">মোট: 252 টি</div></center>
+                        <hr>
+                        <div id="dataContainer"></div>
+                        <div class="page-info" id="pageInfo"></div>
+                        <div class="pagination" id="pagination"></div>
+
+                        text here
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar include -->
+            <div data-include="components/sidebar.html"></div>
+        </div>
+
+        <!-- Footer include -->
+        <div data-include="components/footer.html"></div>
+    </div>
+
+    <!-- Include engine -->
+    <script src="assets/include.js"></script>
+</body>
+</html>
