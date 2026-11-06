@@ -1,0 +1,57 @@
+<!-- Header Section -->
+<div class="header-container">
+    <div class="logo-section">
+        <a href="/index.php" style="display: block">
+            <img src="https://arbd24.github.io/icon/logo.png" height="62px" alt="Logo">
+        </a>
+    </div>
+
+    <div class="social-icons">
+        <a href="http://gemini.google.com" target="_blank"><img alt="Gemini" src="https://arbd24.github.io/w-files/logo/gemi.png"/></a>
+        <a href="http://facebook.com" target="_blank"><img alt="Facebook" src="https://arbd24.github.io/w-files/logo/facebook.png"/></a>
+        <a href="https://web.telegram.org/k" target="_blank"><img alt="Telegram" src="https://arbd24.github.io/w-files/logo/tele.png"/></a>
+        <a href="https://web.whatsapp.com" target="_blank"><img alt="whatsapp" src="https://arbd24.github.io/w-files/logo/wapp.png"/></a>
+        <a href="https://www.youtube.com" target="_blank"><img alt="Youtube" src="https://arbd24.github.io/w-files/logo/youtube.png"/></a>
+    </div>
+</div>
+
+<!-- navbar icon -->
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+
+<!-- navbar -->
+<ul class="custom-nav" id="navbar">
+    <li><a href="https://arbd24.github.io/">Home </a></li>
+    <li><a href="/b.html">Bookmark</a></li>
+    <li><a href="/v.php?p=6">Software</a></li>
+    <li><a href="/v.php?p=13">Exam Results</a></li>
+    <li><a href="/v.php?p=68">Link List</a></li>
+
+    <li class="dropdown">
+        <a href="javascript:void(0)" class="dropbtn">Menu</a>
+        <div class="dropdown-content">
+            <a href="/my/nu_all_notice.php" target="_blank"> NU All Notice </a>
+            <a href="/v.php?p=5">Online Converter </a>
+            <a href="/v.php?p=14">Movie Download </a>
+            <a href="/v.php?p=8">FTP Server</a>
+            <a href="/ar-files/my-img" target="_blank">Gallery</a>
+            <a href="https://cp1.privatedns.top:1551/webmail/?/MobileVersion" target="_blank">WebMail</a>
+            <a href="/blog/admin-cp.php">Login</a>
+        </div>
+    </li>
+</ul>
+
+<script>
+function toggleMenu() {
+    var x = document.getElementById("navbar");
+    if (x.className === "custom-nav") {
+        x.className += " active";
+    } else {
+        x.className = "custom-nav";
+    }
+}
+</script>
+
+<!-- Search Container -->
+<form method="get" class="search-form">
+    <input type="text" name="search" id="search" placeholder="Search here..." value="">
+</form>
