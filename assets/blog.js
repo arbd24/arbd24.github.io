@@ -4,7 +4,6 @@
     var JSON_URL = "https://raw.githubusercontent.com/arbd24/arbd24.github.io/refs/heads/main/components/blogs.json";
     var PER_PAGE = 15;
 
-    // DOM রেডি হলে চালু করবো
     function ready(fn) {
         if (document.readyState !== "loading") fn();
         else document.addEventListener("DOMContentLoaded", fn);
@@ -22,14 +21,13 @@
         var postMeta    = document.getElementById("postMeta");
         var postContent = document.getElementById("postContent");
 
-        if (!listView) return; // এই পেজে blog UI নেই
+        if (!listView) return;
 
         var params   = new URLSearchParams(window.location.search);
         var wantedId = params.get("id");
 
         // -------- হেল্পার --------
 
-        // স্ক্রিপ্ট/নসক্রিপ্ট/হেড ব্লক সরানো
         function removeBlock(html, openTag, closeTag) {
             var out = "";
             var i = 0;
@@ -44,7 +42,6 @@
             return out;
         }
 
-        // <html>, <body>, <head> ট্যাগের শুধু ট্যাগ মুছে ফেলা
         function stripWrapperTags(html) {
             var out = "";
             var i = 0;
@@ -65,7 +62,6 @@
             return out;
         }
 
-        // DOCTYPE সরানো
         function stripDoctype(html) {
             var lower = html.toLowerCase();
             var out = "";
@@ -81,7 +77,6 @@
             return out;
         }
 
-        // CSS scope: প্রতিটি selector-এর আগে #postContent
         function scopeCss(css) {
             if (!css) return "";
             return css.replace(/([^{}]+)\{/g, function (full, selectorPart) {
@@ -100,7 +95,6 @@
             });
         }
 
-        // <style>...</style> খুঁজে scope করা
         function scopeStyles(html) {
             var STYLE_OPEN = "<style";
             var STYLE_CLOSE = "<" + "/style" + ">";
@@ -141,7 +135,6 @@
             return html.trim();
         }
 
-        // পোস্টের প্রথম <img src="..."> বের করা
         function getThumb(raw) {
             if (!raw) return "";
             var m = raw.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/i);
@@ -178,43 +171,48 @@
                 var post = DATA[id];
 
                 var li = document.createElement("li");
-                li.className = "blog-list-item";
+                li.className = "blog-card";
 
-                var a = document.createElement("a");
-                a.href = "?id=" + encodeURIComponent(id);
-                a.className = "blog-list-link";
+                var link = document.createElement("a");
+                link.href = "?id=" + encodeURIComponent(id);
+                link.className = "blog-card-link";
 
                 var thumbSrc = getThumb(post.text);
                 if (thumbSrc) {
                     var img = document.createElement("img");
-                    img.className = "blog-thumb";
+                    img.className = "blog-card-thumb";
                     img.src = thumbSrc;
                     img.alt = post.name || "";
                     img.loading = "lazy";
                     img.onerror = function () { if (this.parentNode) this.parentNode.removeChild(this); };
-                    a.appendChild(img);
+                    link.appendChild(img);
                 }
 
                 var info = document.createElement("div");
-                info.className = "blog-list-info";
+                info.className = "blog-card-info";
 
-                var titleEl = document.createElement("span");
-                titleEl.className = "blog-list-title";
+                var titleEl = document.createElement("div");
+                titleEl.className = "blog-card-title";
                 titleEl.textContent = post.name || ("Untitled #" + id);
                 info.appendChild(titleEl);
 
-                var metaParts = [];
-                if (post.category) metaParts.push(post.category);
-                if (post.date)     metaParts.push(post.date);
-                if (metaParts.length) {
-                    var meta = document.createElement("span");
-                    meta.className = "blog-list-meta";
-                    meta.textContent = metaParts.join(" • ");
-                    info.appendChild(meta);
+                if (post.category) {
+                    var cat = document.createElement("div");
+                    cat.className = "blog-card-cat";
+                    cat.textContent = post.category;
+                    info.appendChild(cat);
                 }
 
-                a.appendChild(info);
-                li.appendChild(a);
+                var dateText = post.date || (post.created_at ? post.created_at.slice(0, 10) : "");
+                if (dateText) {
+                    var dateEl = document.createElement("div");
+                    dateEl.className = "blog-card-date";
+                    dateEl.innerHTML = '<i class="far fa-calendar-alt"></i> ' + dateText;
+                    info.appendChild(dateEl);
+                }
+
+                link.appendChild(info);
+                li.appendChild(link);
                 blogList.appendChild(li);
             }
 
@@ -307,7 +305,6 @@
             if (back) back.href = "?";
         }
 
-        // হেডারের #search এর সাথে সংযোগ
         function bindSearchBox() {
             var searchInput = document.getElementById("search");
             if (!searchInput) return false;
@@ -323,7 +320,6 @@
             return true;
         }
 
-        // -------- ফেচ --------
         fetch(JSON_URL)
             .then(function (res) {
                 if (!res.ok) throw new Error("HTTP " + res.status);
