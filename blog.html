@@ -15,14 +15,9 @@
 
 <!-- ____________________________________ -->
 
-<!-- ===== সার্চ বার (শুধু লিস্ট মোডে) ===== -->
+<!-- ===== লিস্ট ভিউ (ডিফল্ট) ===== -->
 <div id="listView">
     <h1 class="blog-page-title">ব্লগ</h1>
-
-    <div class="blog-search-wrap">
-        <input type="search" id="blogSearch" class="blog-search"
-               placeholder="ব্লগ খুঁজুন…" autocomplete="off">
-    </div>
 
     <div id="blogStatus" class="blog-status">লোড হচ্ছে…</div>
     <ul id="blogList" class="blog-list"></ul>
@@ -52,43 +47,82 @@
     const blogStatus  = document.getElementById("blogStatus");
     const blogList    = document.getElementById("blogList");
     const blogPager   = document.getElementById("blogPager");
-    const blogSearch  = document.getElementById("blogSearch");
     const postStatus  = document.getElementById("postStatus");
     const postArticle = document.getElementById("postArticle");
     const postTitle   = document.getElementById("postTitle");
     const postMeta    = document.getElementById("postMeta");
     const postContent = document.getElementById("postContent");
 
+    // ⬇️ আপনার header-এর সার্চ ইনপুট — একই id ব্যবহার করছি
+    //    (include.js দিয়ে header লোড হওয়ার পরে element পাওয়া যাবে)
+    let searchInput = null;
+
     const params   = new URLSearchParams(location.search);
     const wantedId = params.get("id");
 
     // ---------- হেল্পার ----------
-    function cleanPostHtml(html) {
+
+    // পোস্ট HTML কে এমনভাবে ব্যবহার করি যেন:
+    //  - <style> পুরোপুরি না মুছে বরং "#postContent" দিয়ে scope করা হয়
+    //  - <script> ট্যাগ সরানো হয় (নিরাপত্তা + পেজ রিডাইরেক্ট আটকাতে)
+    //  - <html>, <body>, <head>, DOCTYPE সরানো হয়
+    //  - result ভেতরে কোনো <html>/<body> অবশিষ্ট না থাকে
+    function preparePostHtml(html) {
         if (!html) return "";
-        return html
-            .replace(/<style[\s\S]*?<\/style>/gi, "")
-            .replace(/<script[\s\S]*?<\/script>/gi, "")
-            .replace(/<head[\s\S]*?<\/head>/gi, "")
-            .replace(/<!DOCTYPE[^>]*>/gi, "")
-            .replace(/<\/?(html|head|body)[^>]*>/gi, "")
-            .trim();
+
+        // 1) <script>...</script> সরাও
+        html = html.replace(/<script[\s\S]*?<\/script>/gi, "");
+        // 2) <noscript>...</noscript> সরাও (অপ্রয়োজনীয়)
+        html = html.replace(/<noscript[\s\S]*?<\/noscript>/gi, "");
+
+        // 3) <style> কে scope করো
+        html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/gi, (m, attrs, css) => {
+            // প্রতিটি সিলেক্টরের আগে #postContent বসাও (except @-rules)
+            const scoped = css.replace(
+                /(^|\})\s*([^{@]+?)\s*\{/g,
+                (mm, brace, sel) => {
+                    const newSel = sel.split(",")
+                        .map(s => {
+                            s = s.trim();
+                            if (!s) return s;
+                            // body/html কে #postContent ধরে নাও
+                            if (/^(html|body)$/i.test(s)) return "#postContent";
+                            if (/^(html|body)\b/i.test(s))
+                                return s.replace(/^(html|body)\b/i, "#postContent");
+                            return "#postContent " + s;
+                        })
+                        .filter(Boolean)
+                        .join(", ");
+                    return brace + "\n" + newSel + " {";
+                }
+            );
+            return "<style" + attrs + ">" + scoped + "</style>";
+        });
+
+        // 4) head/html/body ট্যাগ + DOCTYPE সরাও
+        html = html.replace(/<head[\s\S]*?<\/head>/gi, "");
+        html = html.replace(/<!DOCTYPE[^>]*>/gi, "");
+        html = html.replace(/<\/?(html|head|body)[^>]*>/gi, "");
+
+        return html.trim();
     }
 
-    function escapeHtml(s) {
-        return String(s || "").replace(/[&<>"']/g, c => ({
-            "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-        }[c]));
+    // পোস্টের text থেকে প্রথম <img> এর src বের করা
+    function getThumb(text) {
+        if (!text) return "";
+        const m = text.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/i);
+        return m ? m[1] : "";
     }
 
     // ---------- স্টেট ----------
-    let ALL_IDS   = [];   // sorted ids
-    let DATA      = null; // raw json
-    let FILTERED  = [];   // search-filtered ids
-    let PAGE      = 1;
+    let ALL_IDS  = [];
+    let DATA     = null;
+    let FILTERED = [];
+    let PAGE     = 1;
 
     function renderList() {
-        blogList.innerHTML = "";
-        blogPager.innerHTML = "";
+        blogList.innerHTML   = "";
+        blogPager.innerHTML  = "";
 
         const total = FILTERED.length;
         const pages = Math.max(1, Math.ceil(total / PER_PAGE));
@@ -109,25 +143,47 @@
         for (let i = start; i < end; i++) {
             const id   = FILTERED[i];
             const post = DATA[id];
+
             const li = document.createElement("li");
             li.className = "blog-list-item";
 
             const a = document.createElement("a");
             a.href = "?id=" + encodeURIComponent(id);
             a.className = "blog-list-link";
-            a.textContent = post.name || ("Untitled #" + id);
-            li.appendChild(a);
+
+            // ---- থাম্বনেইল ----
+            const thumbSrc = getThumb(post.text);
+            if (thumbSrc) {
+                const img = document.createElement("img");
+                img.className = "blog-thumb";
+                img.src = thumbSrc;
+                img.alt = post.name || "";
+                img.loading = "lazy";
+                img.onerror = () => img.remove(); // ভাঙা ইমেজ হলে সরাও
+                a.appendChild(img);
+            }
+
+            // ---- টাইটেল + মেটা ----
+            const info = document.createElement("div");
+            info.className = "blog-list-info";
+
+            const titleEl = document.createElement("span");
+            titleEl.className = "blog-list-title";
+            titleEl.textContent = post.name || ("Untitled #" + id);
+            info.appendChild(titleEl);
 
             const metaParts = [];
             if (post.category) metaParts.push(post.category);
             if (post.date)     metaParts.push(post.date);
             if (metaParts.length) {
-                const meta = document.createElement("div");
+                const meta = document.createElement("span");
                 meta.className = "blog-list-meta";
                 meta.textContent = metaParts.join(" • ");
-                li.appendChild(meta);
+                info.appendChild(meta);
             }
 
+            a.appendChild(info);
+            li.appendChild(a);
             blogList.appendChild(li);
         }
 
@@ -140,7 +196,6 @@
             prev.onclick = () => { PAGE--; renderList(); window.scrollTo({top:0, behavior:"smooth"}); };
             blogPager.appendChild(prev);
 
-            // পেজ নাম্বার — বেশি হলে সংক্ষিপ্ত
             const pageBtns = [];
             const push = n => pageBtns.push(n);
             if (pages <= 7) {
@@ -178,7 +233,7 @@
     }
 
     function applySearch(q) {
-        const needle = q.trim().toLowerCase();
+        const needle = (q || "").trim().toLowerCase();
         if (!needle) {
             FILTERED = ALL_IDS.slice();
         } else {
@@ -192,7 +247,6 @@
         renderList();
     }
 
-    // ---------- ডিটেইল মোড ----------
     function renderDetail() {
         listView.style.display = "none";
         postView.style.display = "block";
@@ -211,7 +265,8 @@
         postMeta.textContent = parts.join(" • ");
         if (!parts.length) postMeta.style.display = "none";
 
-        postContent.innerHTML = cleanPostHtml(post.text) ||
+        // ⬇️ এখনো চাইলে scope করা style রাখি, script বাদ দিই
+        postContent.innerHTML = preparePostHtml(post.text) ||
                                 "<p><em>কনটেন্ট নেই</em></p>";
 
         document.title = (post.name || "Blog") + " — Blog";
@@ -219,8 +274,24 @@
         postStatus.style.display  = "none";
         postArticle.style.display = "block";
 
-        // back লিংক — বর্তমান পেজ স্টেট রাখতে চাইলে "?" যথেষ্ট
         document.getElementById("backToList").href = "?";
+    }
+
+    // ---------- হেডারের সার্চ বক্স রেডি হলে সেটে লিসেনার লাগাই ----------
+    function bindSearchBox() {
+        searchInput = document.getElementById("search");
+        if (!searchInput) return false;
+
+        // পেজ লোডে যদি আগে থেকে value থাকে (?) — সেটাও প্রয়োগ করি
+        // (URL এ ?q= থাকলে)—না, দরকার নেই, শুধু কারেন্ট ভ্যালুই যথেষ্ট
+        if (searchInput.value) applySearch(searchInput.value);
+
+        let t;
+        searchInput.addEventListener("input", e => {
+            clearTimeout(t);
+            t = setTimeout(() => applySearch(e.target.value), 150);
+        });
+        return true;
     }
 
     // ---------- ফেচ ----------
@@ -230,10 +301,9 @@
             return res.json();
         })
         .then(data => {
-            DATA = data;
+            DATA    = data;
             ALL_IDS = Object.keys(data);
 
-            // নতুন আগে
             ALL_IDS.sort((a, b) => {
                 const da = data[a].created_at || data[a].date || "";
                 const db = data[b].created_at || data[b].date || "";
@@ -249,12 +319,17 @@
             blogStatus.style.display = "none";
             renderList();
 
-            // সার্চ লিসেনার
-            let t;
-            blogSearch.addEventListener("input", e => {
-                clearTimeout(t);
-                t = setTimeout(() => applySearch(e.target.value), 150);
-            });
+            // header include.js দিয়ে লোড হওয়ায় #search দেরিতে আসতে পারে।
+            // প্রথমে চেষ্টা করি, না পেলে MutationObserver দিয়ে অপেক্ষা করি।
+            if (!bindSearchBox()) {
+                const obs = new MutationObserver(() => {
+                    if (bindSearchBox()) obs.disconnect();
+                });
+                obs.observe(document.body, { childList: true, subtree: true });
+
+                // নিরাপত্তার জন্য ৫ সেকেন্ড পরে বন্ধ
+                setTimeout(() => obs.disconnect(), 5000);
+            }
         })
         .catch(err => {
             console.error(err);
@@ -267,31 +342,37 @@
 <style>
 /* ---------- লিস্ট ---------- */
 .blog-page-title { margin: 0 0 1rem; }
-
-.blog-search-wrap { margin: 0 0 1rem; }
-.blog-search {
-    width: 100%;
-    box-sizing: border-box;
-    padding: .6rem .8rem;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    font-size: .95rem;
-    outline: none;
-}
-.blog-search:focus { border-color: #0a66c2; }
-
 .blog-status { padding: .75rem 0; color: #666; }
 
 .blog-list { list-style: none; padding: 0; margin: 0; }
-.blog-list-item { border-bottom: 1px solid #e5e5e5; padding: .85rem 0; }
+.blog-list-item { border-bottom: 1px solid #e5e5e5; }
 .blog-list-link {
-    display: block;
-    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .85rem .25rem;
     color: #1a1a1a;
     text-decoration: none;
     transition: color .2s, padding-left .2s;
 }
 .blog-list-link:hover { color: #0a66c2; padding-left: .4rem; }
+
+.blog-thumb {
+    flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    background: #f6f7f9;
+}
+
+.blog-list-info { display: flex; flex-direction: column; min-width: 0; }
+.blog-list-title {
+    font-size: 1.05rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
 .blog-list-meta { font-size: .85rem; color: #888; margin-top: .25rem; }
 
 /* ---------- পেজার ---------- */
