@@ -1,0 +1,153 @@
+<div class="blog-content-view">
+
+    <!-- ===== লিস্ট ভিউ (ডিফল্ট) ===== -->
+    <div id="listView">
+        <h1 class="blog-page-title">ব্লগ</h1>
+        <div id="blogStatus" class="blog-status">লোড হচ্ছে…</div>
+        <ul id="blogList" class="blog-list"></ul>
+    </div>
+
+    <!-- ===== ডিটেইল ভিউ (?id= থাকলে) ===== -->
+    <div id="postView" style="display:none;">
+        <div id="postStatus" class="blog-status">লোড হচ্ছে…</div>
+        <article id="postArticle" style="display:none;">
+            <h1 id="postTitle" class="post-title"></h1>
+            <div id="postMeta" class="post-meta"></div>
+            <div id="postContent" class="post-body"></div>
+        </article>
+        <p style="margin-top:2rem;">
+            <a href="blog.html">&larr; সব ব্লগে ফিরে যান</a>
+        </p>
+    </div>
+
+</div>
+
+<script>
+(function () {
+    // ⬇️ এখানে আপনার GitHub raw লিংক বসান
+    const JSON_URL = "https://raw.githubusercontent.com/USERNAME/REPO/main/blogs.json";
+
+    const listView   = document.getElementById("listView");
+    const postView   = document.getElementById("postView");
+    const blogStatus = document.getElementById("blogStatus");
+    const blogList   = document.getElementById("blogList");
+    const postStatus = document.getElementById("postStatus");
+    const postArticle= document.getElementById("postArticle");
+    const postTitle  = document.getElementById("postTitle");
+    const postMeta   = document.getElementById("postMeta");
+    const postContent= document.getElementById("postContent");
+
+    const wantedId = new URLSearchParams(location.search).get("id");
+
+    // JSON-এর <style>, <script>, <body> ইত্যাদি সরানোর ফাংশন
+    function cleanPostHtml(html) {
+        if (!html) return "";
+        return html
+            .replace(/<style[\s\S]*?<\/style>/gi, "")
+            .replace(/<script[\s\S]*?<\/script>/gi, "")
+            .replace(/<head[\s\S]*?<\/head>/gi, "")
+            .replace(/<!DOCTYPE[^>]*>/gi, "")
+            .replace(/<\/?(html|head|body)[^>]*>/gi, "")
+            .trim();
+    }
+
+    fetch(JSON_URL)
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .then(data => {
+
+            /* ========== ডিটেইল মোড ========== */
+            if (wantedId) {
+                listView.style.display = "none";
+                postView.style.display = "block";
+
+                const post = data[wantedId];
+                if (!post) {
+                    postStatus.textContent = "পোস্টটি খুঁজে পাওয়া যায়নি।";
+                    return;
+                }
+
+                postTitle.textContent = post.name || "Untitled";
+
+                const parts = [];
+                if (post.category) parts.push(post.category);
+                if (post.date)     parts.push(post.date);
+                postMeta.textContent = parts.join(" • ");
+                if (!parts.length) postMeta.style.display = "none";
+
+                postContent.innerHTML = cleanPostHtml(post.text) ||
+                                        "<p><em>কনটেন্ট নেই</em></p>";
+
+                document.title = (post.name || "Blog") + " — " + document.title;
+
+                postStatus.style.display  = "none";
+                postArticle.style.display = "block";
+                return;
+            }
+
+            /* ========== লিস্ট মোড ========== */
+            const ids = Object.keys(data);
+            if (!ids.length) throw new Error("কোনো পোস্ট নেই");
+
+            // নতুন আগে
+            ids.sort((a, b) => {
+                const da = data[a].created_at || data[a].date || "";
+                const db = data[b].created_at || data[b].date || "";
+                return db.localeCompare(da);
+            });
+
+            blogStatus.style.display = "none";
+
+            ids.forEach(id => {
+                const post = data[id];
+                const li = document.createElement("li");
+                li.className = "blog-list-item";
+
+                const a = document.createElement("a");
+                a.href = "?id=" + encodeURIComponent(id);   // ⬅️ একই পেজে লিংক
+                a.className = "blog-list-link";
+                a.textContent = post.name || ("Untitled #" + id);
+                li.appendChild(a);
+
+                if (post.category || post.date) {
+                    const meta = document.createElement("div");
+                    meta.className = "blog-list-meta";
+                    const p = [];
+                    if (post.category) p.push(post.category);
+                    if (post.date)     p.push(post.date);
+                    meta.textContent = p.join(" • ");
+                    li.appendChild(meta);
+                }
+
+                blogList.appendChild(li);
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            const el = wantedId ? postStatus : blogStatus;
+            el.textContent = "লোড করা যায়নি: " + err.message;
+        });
+})();
+</script>
+
+<style>
+.blog-page-title { margin: 0 0 1rem; }
+.blog-status { padding: .75rem 0; color: #666; }
+
+.blog-list { list-style: none; padding: 0; margin: 0; }
+.blog-list-item { border-bottom: 1px solid #e5e5e5; padding: .85rem 0; }
+.blog-list-link {
+    display: block; font-size: 1.05rem; color: #1a1a1a;
+    text-decoration: none; transition: color .2s, padding-left .2s;
+}
+.blog-list-link:hover { color: #0a66c2; padding-left: .4rem; }
+.blog-list-meta { font-size: .85rem; color: #888; margin-top: .25rem; }
+
+.post-title { font-size: 1.9rem; line-height: 1.3; margin: 0 0 .5rem; }
+.post-meta  { color: #777; font-size: .9rem; margin-bottom: 1.5rem; }
+.post-body  { line-height: 1.75; font-size: 1.05rem; }
+.post-body p { margin: 0 0 1rem; }
+.post-body img { max-width: 100%; height: auto; }
+</style>
