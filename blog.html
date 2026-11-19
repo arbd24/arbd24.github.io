@@ -1,45 +1,68 @@
-<div class="blog-content-view">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Blog</title>
+    <div data-include="/components/head-meta.html"></div>
+</head>
+<body>
+    <div class="container">
+        <div data-include="/components/header.html"></div>
 
-    <!-- ===== লিস্ট ভিউ (ডিফল্ট) ===== -->
-    <div id="listView">
-        <h1 class="blog-page-title">ব্লগ</h1>
-        <div id="blogStatus" class="blog-status">লোড হচ্ছে…</div>
-        <ul id="blogList" class="blog-list"></ul>
+        <div class="two-column-layout">
+            <div class="left-column">
+                <div class="blog-view">
+                    <div class="blog-content-view">
+
+<!-- ____________________________________ -->
+
+<!-- ===== সার্চ বার (শুধু লিস্ট মোডে) ===== -->
+<div id="listView">
+    <h1 class="blog-page-title">ব্লগ</h1>
+
+    <div class="blog-search-wrap">
+        <input type="search" id="blogSearch" class="blog-search"
+               placeholder="ব্লগ খুঁজুন…" autocomplete="off">
     </div>
 
-    <!-- ===== ডিটেইল ভিউ (?id= থাকলে) ===== -->
-    <div id="postView" style="display:none;">
-        <div id="postStatus" class="blog-status">লোড হচ্ছে…</div>
-        <article id="postArticle" style="display:none;">
-            <h1 id="postTitle" class="post-title"></h1>
-            <div id="postMeta" class="post-meta"></div>
-            <div id="postContent" class="post-body"></div>
-        </article>
-        <p style="margin-top:2rem;">
-            <a href="blog.html">&larr; সব ব্লগে ফিরে যান</a>
-        </p>
-    </div>
+    <div id="blogStatus" class="blog-status">লোড হচ্ছে…</div>
+    <ul id="blogList" class="blog-list"></ul>
+    <div id="blogPager" class="blog-pager"></div>
+</div>
 
+<!-- ===== ডিটেইল ভিউ (?id= থাকলে) ===== -->
+<div id="postView" style="display:none;">
+    <div id="postStatus" class="blog-status">লোড হচ্ছে…</div>
+    <article id="postArticle" style="display:none;">
+        <h1 id="postTitle" class="post-title"></h1>
+        <div id="postMeta" class="post-meta"></div>
+        <div id="postContent" class="post-body"></div>
+    </article>
+    <p style="margin-top:2rem;">
+        <a href="?" id="backToList">&larr; সব ব্লগে ফিরে যান</a>
+    </p>
 </div>
 
 <script>
 (function () {
-    // ⬇️ এখানে আপনার GitHub raw লিংক বসান
     const JSON_URL = "https://raw.githubusercontent.com/arbd24/arbd24.github.io/refs/heads/main/components/blogs.json";
+    const PER_PAGE = 15;
 
-    const listView   = document.getElementById("listView");
-    const postView   = document.getElementById("postView");
-    const blogStatus = document.getElementById("blogStatus");
-    const blogList   = document.getElementById("blogList");
-    const postStatus = document.getElementById("postStatus");
-    const postArticle= document.getElementById("postArticle");
-    const postTitle  = document.getElementById("postTitle");
-    const postMeta   = document.getElementById("postMeta");
-    const postContent= document.getElementById("postContent");
+    const listView    = document.getElementById("listView");
+    const postView    = document.getElementById("postView");
+    const blogStatus  = document.getElementById("blogStatus");
+    const blogList    = document.getElementById("blogList");
+    const blogPager   = document.getElementById("blogPager");
+    const blogSearch  = document.getElementById("blogSearch");
+    const postStatus  = document.getElementById("postStatus");
+    const postArticle = document.getElementById("postArticle");
+    const postTitle   = document.getElementById("postTitle");
+    const postMeta    = document.getElementById("postMeta");
+    const postContent = document.getElementById("postContent");
 
-    const wantedId = new URLSearchParams(location.search).get("id");
+    const params   = new URLSearchParams(location.search);
+    const wantedId = params.get("id");
 
-    // JSON-এর <style>, <script>, <body> ইত্যাদি সরানোর ফাংশন
+    // ---------- হেল্পার ----------
     function cleanPostHtml(html) {
         if (!html) return "";
         return html
@@ -51,77 +74,186 @@
             .trim();
     }
 
+    function escapeHtml(s) {
+        return String(s || "").replace(/[&<>"']/g, c => ({
+            "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+        }[c]));
+    }
+
+    // ---------- স্টেট ----------
+    let ALL_IDS   = [];   // sorted ids
+    let DATA      = null; // raw json
+    let FILTERED  = [];   // search-filtered ids
+    let PAGE      = 1;
+
+    function renderList() {
+        blogList.innerHTML = "";
+        blogPager.innerHTML = "";
+
+        const total = FILTERED.length;
+        const pages = Math.max(1, Math.ceil(total / PER_PAGE));
+
+        if (PAGE > pages) PAGE = pages;
+        if (PAGE < 1)     PAGE = 1;
+
+        const start = (PAGE - 1) * PER_PAGE;
+        const end   = Math.min(start + PER_PAGE, total);
+
+        if (!total) {
+            blogStatus.style.display = "block";
+            blogStatus.textContent = "কোনো ব্লগ পাওয়া যায়নি।";
+            return;
+        }
+        blogStatus.style.display = "none";
+
+        for (let i = start; i < end; i++) {
+            const id   = FILTERED[i];
+            const post = DATA[id];
+            const li = document.createElement("li");
+            li.className = "blog-list-item";
+
+            const a = document.createElement("a");
+            a.href = "?id=" + encodeURIComponent(id);
+            a.className = "blog-list-link";
+            a.textContent = post.name || ("Untitled #" + id);
+            li.appendChild(a);
+
+            const metaParts = [];
+            if (post.category) metaParts.push(post.category);
+            if (post.date)     metaParts.push(post.date);
+            if (metaParts.length) {
+                const meta = document.createElement("div");
+                meta.className = "blog-list-meta";
+                meta.textContent = metaParts.join(" • ");
+                li.appendChild(meta);
+            }
+
+            blogList.appendChild(li);
+        }
+
+        // ---------- পেজার ----------
+        if (pages > 1) {
+            const prev = document.createElement("button");
+            prev.className = "blog-page-btn";
+            prev.textContent = "« আগের";
+            prev.disabled = PAGE === 1;
+            prev.onclick = () => { PAGE--; renderList(); window.scrollTo({top:0, behavior:"smooth"}); };
+            blogPager.appendChild(prev);
+
+            // পেজ নাম্বার — বেশি হলে সংক্ষিপ্ত
+            const pageBtns = [];
+            const push = n => pageBtns.push(n);
+            if (pages <= 7) {
+                for (let n = 1; n <= pages; n++) push(n);
+            } else {
+                push(1);
+                if (PAGE > 3) push("…");
+                for (let n = Math.max(2, PAGE-1); n <= Math.min(pages-1, PAGE+1); n++) push(n);
+                if (PAGE < pages-2) push("…");
+                push(pages);
+            }
+
+            pageBtns.forEach(n => {
+                if (n === "…") {
+                    const sp = document.createElement("span");
+                    sp.className = "blog-page-dots";
+                    sp.textContent = "…";
+                    blogPager.appendChild(sp);
+                    return;
+                }
+                const b = document.createElement("button");
+                b.className = "blog-page-btn" + (n === PAGE ? " active" : "");
+                b.textContent = n;
+                b.onclick = () => { PAGE = n; renderList(); window.scrollTo({top:0, behavior:"smooth"}); };
+                blogPager.appendChild(b);
+            });
+
+            const next = document.createElement("button");
+            next.className = "blog-page-btn";
+            next.textContent = "পরের »";
+            next.disabled = PAGE === pages;
+            next.onclick = () => { PAGE++; renderList(); window.scrollTo({top:0, behavior:"smooth"}); };
+            blogPager.appendChild(next);
+        }
+    }
+
+    function applySearch(q) {
+        const needle = q.trim().toLowerCase();
+        if (!needle) {
+            FILTERED = ALL_IDS.slice();
+        } else {
+            FILTERED = ALL_IDS.filter(id => {
+                const p = DATA[id];
+                return (p.name || "").toLowerCase().includes(needle) ||
+                       (p.category || "").toLowerCase().includes(needle);
+            });
+        }
+        PAGE = 1;
+        renderList();
+    }
+
+    // ---------- ডিটেইল মোড ----------
+    function renderDetail() {
+        listView.style.display = "none";
+        postView.style.display = "block";
+
+        const post = DATA[wantedId];
+        if (!post) {
+            postStatus.textContent = "পোস্টটি খুঁজে পাওয়া যায়নি।";
+            return;
+        }
+
+        postTitle.textContent = post.name || "Untitled";
+
+        const parts = [];
+        if (post.category) parts.push(post.category);
+        if (post.date)     parts.push(post.date);
+        postMeta.textContent = parts.join(" • ");
+        if (!parts.length) postMeta.style.display = "none";
+
+        postContent.innerHTML = cleanPostHtml(post.text) ||
+                                "<p><em>কনটেন্ট নেই</em></p>";
+
+        document.title = (post.name || "Blog") + " — Blog";
+
+        postStatus.style.display  = "none";
+        postArticle.style.display = "block";
+
+        // back লিংক — বর্তমান পেজ স্টেট রাখতে চাইলে "?" যথেষ্ট
+        document.getElementById("backToList").href = "?";
+    }
+
+    // ---------- ফেচ ----------
     fetch(JSON_URL)
         .then(res => {
             if (!res.ok) throw new Error("HTTP " + res.status);
             return res.json();
         })
         .then(data => {
-
-            /* ========== ডিটেইল মোড ========== */
-            if (wantedId) {
-                listView.style.display = "none";
-                postView.style.display = "block";
-
-                const post = data[wantedId];
-                if (!post) {
-                    postStatus.textContent = "পোস্টটি খুঁজে পাওয়া যায়নি।";
-                    return;
-                }
-
-                postTitle.textContent = post.name || "Untitled";
-
-                const parts = [];
-                if (post.category) parts.push(post.category);
-                if (post.date)     parts.push(post.date);
-                postMeta.textContent = parts.join(" • ");
-                if (!parts.length) postMeta.style.display = "none";
-
-                postContent.innerHTML = cleanPostHtml(post.text) ||
-                                        "<p><em>কনটেন্ট নেই</em></p>";
-
-                document.title = (post.name || "Blog") + " — " + document.title;
-
-                postStatus.style.display  = "none";
-                postArticle.style.display = "block";
-                return;
-            }
-
-            /* ========== লিস্ট মোড ========== */
-            const ids = Object.keys(data);
-            if (!ids.length) throw new Error("কোনো পোস্ট নেই");
+            DATA = data;
+            ALL_IDS = Object.keys(data);
 
             // নতুন আগে
-            ids.sort((a, b) => {
+            ALL_IDS.sort((a, b) => {
                 const da = data[a].created_at || data[a].date || "";
                 const db = data[b].created_at || data[b].date || "";
                 return db.localeCompare(da);
             });
 
+            if (wantedId) {
+                renderDetail();
+                return;
+            }
+
+            FILTERED = ALL_IDS.slice();
             blogStatus.style.display = "none";
+            renderList();
 
-            ids.forEach(id => {
-                const post = data[id];
-                const li = document.createElement("li");
-                li.className = "blog-list-item";
-
-                const a = document.createElement("a");
-                a.href = "?id=" + encodeURIComponent(id);   // ⬅️ একই পেজে লিংক
-                a.className = "blog-list-link";
-                a.textContent = post.name || ("Untitled #" + id);
-                li.appendChild(a);
-
-                if (post.category || post.date) {
-                    const meta = document.createElement("div");
-                    meta.className = "blog-list-meta";
-                    const p = [];
-                    if (post.category) p.push(post.category);
-                    if (post.date)     p.push(post.date);
-                    meta.textContent = p.join(" • ");
-                    li.appendChild(meta);
-                }
-
-                blogList.appendChild(li);
+            // সার্চ লিসেনার
+            let t;
+            blogSearch.addEventListener("input", e => {
+                clearTimeout(t);
+                t = setTimeout(() => applySearch(e.target.value), 150);
             });
         })
         .catch(err => {
@@ -133,21 +265,78 @@
 </script>
 
 <style>
+/* ---------- লিস্ট ---------- */
 .blog-page-title { margin: 0 0 1rem; }
+
+.blog-search-wrap { margin: 0 0 1rem; }
+.blog-search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: .6rem .8rem;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-size: .95rem;
+    outline: none;
+}
+.blog-search:focus { border-color: #0a66c2; }
+
 .blog-status { padding: .75rem 0; color: #666; }
 
 .blog-list { list-style: none; padding: 0; margin: 0; }
 .blog-list-item { border-bottom: 1px solid #e5e5e5; padding: .85rem 0; }
 .blog-list-link {
-    display: block; font-size: 1.05rem; color: #1a1a1a;
-    text-decoration: none; transition: color .2s, padding-left .2s;
+    display: block;
+    font-size: 1.05rem;
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color .2s, padding-left .2s;
 }
 .blog-list-link:hover { color: #0a66c2; padding-left: .4rem; }
 .blog-list-meta { font-size: .85rem; color: #888; margin-top: .25rem; }
 
+/* ---------- পেজার ---------- */
+.blog-pager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    align-items: center;
+    margin: 1.25rem 0 .5rem;
+}
+.blog-page-btn {
+    padding: .4rem .75rem;
+    border: 1px solid #d0d7de;
+    background: #fff;
+    color: #1a1a1a;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: .9rem;
+    transition: background .15s, border-color .15s;
+}
+.blog-page-btn:hover:not(:disabled) { background: #f3f6fa; border-color: #0a66c2; }
+.blog-page-btn.active { background: #0a66c2; color: #fff; border-color: #0a66c2; }
+.blog-page-btn:disabled { opacity: .5; cursor: not-allowed; }
+.blog-page-dots { padding: 0 .25rem; color: #888; }
+
+/* ---------- ডিটেইল ---------- */
 .post-title { font-size: 1.9rem; line-height: 1.3; margin: 0 0 .5rem; }
 .post-meta  { color: #777; font-size: .9rem; margin-bottom: 1.5rem; }
 .post-body  { line-height: 1.75; font-size: 1.05rem; }
 .post-body p { margin: 0 0 1rem; }
 .post-body img { max-width: 100%; height: auto; }
 </style>
+
+<!-- ____________________________________ -->
+
+                    </div>
+                </div>
+            </div>
+
+            <div data-include="/components/sidebar.html"></div>
+        </div>
+
+        <div data-include="/components/footer.html"></div>
+    </div>
+
+    <script src="/assets/include.js"></script>
+</body>
+</html>
