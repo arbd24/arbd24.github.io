@@ -34,8 +34,21 @@
 
 <script>
 (function () {
+    "use strict";
+
     var JSON_URL = "https://raw.githubusercontent.com/arbd24/arbd24.github.io/refs/heads/main/components/blogs.json";
     var PER_PAGE = 15;
+
+    // ⚠️ গুরুত্বপূর্ণ: </script> স্ট্রিং যেন স্ক্রিপ্টের ভেতরে সরাসরি না থাকে,
+    // তাই এভাবে জোড়া দিয়ে বানাচ্ছি
+    var SCRIPT_OPEN  = "<" + "script";
+    var SCRIPT_CLOSE = "<" + "/script" + ">";
+    var NOSCRIPT_OPEN  = "<" + "noscript";
+    var NOSCRIPT_CLOSE = "<" + "/noscript" + ">";
+    var STYLE_OPEN  = "<" + "style";
+    var STYLE_CLOSE = "<" + "/style" + ">";
+    var HEAD_OPEN  = "<" + "head";
+    var HEAD_CLOSE = "<" + "/head" + ">";
 
     var listView    = document.getElementById("listView");
     var postView    = document.getElementById("postView");
@@ -53,60 +66,75 @@
     var params   = new URLSearchParams(location.search);
     var wantedId = params.get("id");
 
-    // ---------- হেল্পার ----------
-    // পোস্টের text থেকে <style> অংশ এবং বাকি HTML আলাদা করা
-    // তারপর style-এর প্রতিটি rule-কে #postContent দিয়ে scope করা
-    function preparePostHtml(html) {
-        if (!html) return "";
-
-        // 1) <script>...</script> সরাও
-        html = html.split(/<script[\s\S]*?<\/script>/gi).join("");
-
-        // 2) <noscript>...</noscript> সরাও
-        html = html.split(/<noscript[\s\S]*?<\/noscript>/gi).join("");
-
-        // 3) <head>...</head> সরাও
-        html = html.split(/<head[\s\S]*?<\/head>/gi).join("");
-
-        // 4) DOCTYPE সরাও
-        html = html.split(/<!DOCTYPE[^>]*>/gi).join("");
-
-        // 5) <html>, </html>, <body>, </body> ট্যাগ সরাও
-        html = html.split(/<\/?(html|head|body)[^>]*>/gi).join("");
-
-        // 6) <style>...</style> গুলো খুঁজে scope করো
-        var out = "";
-        var lastIndex = 0;
-        var re = /<style([^>]*)>([\s\S]*?)<\/style>/gi;
-        var m;
-        while ((m = re.exec(html)) !== null) {
-            out += html.substring(lastIndex, m.index);
-
-            var attrs = m[1] || "";
-            var css   = m[2] || "";
-            var scoped = scopeCss(css);
-
-            out += "<style" + attrs + ">" + scoped + "</style>";
-            lastIndex = re.lastIndex;
+    // ---------- ট্যাগ ব্লক মুছে ফেলা (script/noscript/head) ----------
+    function removeTagBlocks(html, openTag, closeTag) {
+        var result = "";
+        var i = 0;
+        while (i < html.length) {
+            var openIdx = html.indexOf(openTag, i);
+            if (openIdx === -1) {
+                result += html.substring(i);
+                break;
+            }
+            result += html.substring(i, openIdx);
+            var closeIdx = html.indexOf(closeTag, openIdx);
+            if (closeIdx === -1) {
+                // ক্লোজ নেই — বাকিটা বাদ
+                break;
+            }
+            i = closeIdx + closeTag.length;
         }
-        out += html.substring(lastIndex);
-
-        return out.trim();
+        return result;
     }
 
-    // CSS-এর প্রতিটি সিলেক্টরের আগে "#postContent " বসাও, শুধু @-rules বাদে
+    // ---------- html/body ট্যাগ মুছে ফেলা ----------
+    function stripHtmlBodyTags(html) {
+        // "<html" ... ">" এবং "</html>" ধরনের ট্যাগ বাদ দিই
+        var out = "";
+        var i = 0;
+        while (i < html.length) {
+            if (html.charAt(i) === "<") {
+                var j = html.indexOf(">", i);
+                if (j !== -1) {
+                    var tag = html.substring(i + 1, j).replace(/^\//, "").split(/\s/)[0].toLowerCase();
+                    if (tag === "html" || tag === "body" || tag === "head") {
+                        i = j + 1;
+                        continue;
+                    }
+                }
+            }
+            out += html.charAt(i);
+            i++;
+        }
+        return out;
+    }
+
+    // ---------- DOCTYPE সরানো ----------
+    function stripDoctype(html) {
+        var out = "";
+        var i = 0;
+        while (i < html.length) {
+            var idx = html.toLowerCase().indexOf("<!doctype", i);
+            if (idx === -1) {
+                out += html.substring(i);
+                break;
+            }
+            out += html.substring(i, idx);
+            var j = html.indexOf(">", idx);
+            if (j === -1) break;
+            i = j + 1;
+        }
+        return out;
+    }
+
+    // ---------- <style> scope করা ----------
     function scopeCss(css) {
         if (!css) return "";
-
-        // @media ইত্যাদি ব্লক ভেঙে ফেলার ঝুঁকি এড়াতে শুধু সাধারণ rule scope করি
-        // প্রতিটি "selector { ... }" খুঁজে selector কে transform করি
         return css.replace(/([^{}]+)\{/g, function (full, selectorPart) {
-            // @-rules (যেমন @media, @font-face, @keyframes) হলে যেমন আছে তেমনই রাখি
             var trimmed = selectorPart.trim();
             if (!trimmed || trimmed.charAt(0) === "@") {
                 return full;
             }
-            // selector গুলো split করি
             var sels = trimmed.split(",");
             var mapped = [];
             for (var i = 0; i < sels.length; i++) {
@@ -124,7 +152,61 @@
         });
     }
 
-    // পোস্টের text থেকে প্রথম <img> এর src বের করা
+    // ---------- <style> অংশ খুঁজে scope করা ----------
+    function scopeStyleBlocks(html) {
+        var result = "";
+        var i = 0;
+        while (i < html.length) {
+            var openIdx = html.indexOf(STYLE_OPEN, i);
+            if (openIdx === -1) {
+                result += html.substring(i);
+                break;
+            }
+            // নিশ্চিত হই এটা আসল ট্যাগ (এর পরে ">" আছে)
+            var gtIdx = html.indexOf(">", openIdx);
+            if (gtIdx === -1) {
+                result += html.substring(i);
+                break;
+            }
+            var head = html.substring(openIdx, gtIdx + 1); // "<style ...>"
+            // খুঁজি closing
+            var closeIdx = html.indexOf(STYLE_CLOSE, gtIdx + 1);
+            if (closeIdx === -1) {
+                result += html.substring(i);
+                break;
+            }
+            var css = html.substring(gtIdx + 1, closeIdx);
+
+            result += html.substring(i, openIdx);
+            result += head + scopeCss(css) + STYLE_CLOSE;
+
+            i = closeIdx + STYLE_CLOSE.length;
+        }
+        return result;
+    }
+
+    // ---------- মূল ফাংশন ----------
+    function preparePostHtml(html) {
+        if (!html) return "";
+
+        // 1) script/noscript/head ব্লক সরাও
+        html = removeTagBlocks(html, SCRIPT_OPEN,  SCRIPT_CLOSE);
+        html = removeTagBlocks(html, NOSCRIPT_OPEN, NOSCRIPT_CLOSE);
+        html = removeTagBlocks(html, HEAD_OPEN, HEAD_CLOSE);
+
+        // 2) DOCTYPE সরাও
+        html = stripDoctype(html);
+
+        // 3) <html>, <body> ট্যাগ সরাও (শুধু ট্যাগ, ভেতরের কনটেন্ট থাকবে)
+        html = stripHtmlBodyTags(html);
+
+        // 4) <style> scope করো
+        html = scopeStyleBlocks(html);
+
+        return html.trim();
+    }
+
+    // ---------- থাম্বনেইল ----------
     function getThumb(text) {
         if (!text) return "";
         var m = text.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/i);
@@ -202,7 +284,7 @@
             blogList.appendChild(li);
         }
 
-        // ---------- পেজার ----------
+        // পেজার
         if (pages > 1) {
             var prev = document.createElement("button");
             prev.className = "blog-page-btn";
