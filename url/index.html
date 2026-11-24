@@ -1,108 +1,23 @@
-    <script>
-        // ডোমেইন পরিবর্তন হলে প্রিভিউ আপডেট
-        document.getElementById('bloggerDomain').addEventListener('input', function() {
-            document.getElementById('domainPrefix').textContent = 'https://' + this.value + '/';
-        });
+<script>
+(function() {
+    var params = new URLSearchParams(window.location.search);
+    var code = params.get('code');
 
-        // লিংক লিস্ট লোড করুন
-        async function loadLinks() {
-            try {
-                const response = await fetch('?action=list');
-                const data = await response.json();
-                document.getElementById('totalLinks').textContent = data.total;
-                
-                const bloggerDomain = document.getElementById('bloggerDomain').value || 'arbd99.blogspot.com';
-                
-                if (data.links && data.links.length > 0) {
-                    let html = '<table><tr><th>#</th><th>Code</th><th>Short URL</th></tr>';
-                    data.links.forEach((link, index) => {
-                        const shortUrl = 'https://' + bloggerDomain + '/' + link.code;
-                        html += `<tr>
-                            <td>${index + 1}</td>
-                            <td>${link.code}</td>
-                            <td><a href="${shortUrl}" target="_blank">${shortUrl}</a></td>
-                        </tr>`;
-                    });
-                    html += '</table>';
-                    document.getElementById('linkList').innerHTML = html;
+    if (code) {
+        // links.json থেকে ডেটা লোড করে রিডাইরেক্ট
+        fetch('links.json')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var link = data.links.find(function(l) { return l.code === code; });
+                if (link && link.url) {
+                    window.location.replace(link.url);
                 } else {
-                    document.getElementById('linkList').innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No links yet</p>';
+                    document.body.innerHTML = '<p style="text-align:center;padding:40px;">লিংকটি পাওয়া যায়নি (Code: ' + code + ')</p>';
                 }
-            } catch (err) {
-                console.log('Error loading links:', err);
-            }
-        }
-
-        function toggleList() {
-            const list = document.getElementById('linkList');
-            if (list.style.display === 'none') {
-                list.style.display = 'block';
-                loadLinks();
-            } else {
-                list.style.display = 'none';
-            }
-        }
-
-        // ফর্ম সাবমিট
-        document.getElementById('shortenerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const url = document.getElementById('originalUrl').value;
-            const customCode = document.getElementById('customCode').value.trim();
-            const bloggerDomain = document.getElementById('bloggerDomain').value.trim() || 'arbd99.blogspot.com';
-            const loading = document.getElementById('loading');
-            const result = document.getElementById('result');
-            const error = document.getElementById('error');
-            
-            result.classList.remove('show');
-            error.classList.remove('show');
-            loading.classList.add('show');
-            
-            try {
-                const formData = new FormData();
-                formData.append('action', 'create');
-                formData.append('url', url);
-                formData.append('blogger_domain', bloggerDomain);
-                if (customCode) {
-                    formData.append('custom_code', customCode);
-                }
-                
-                const response = await fetch('', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                loading.classList.remove('show');
-                
-                if (data.success) {
-                    document.getElementById('shortUrl').value = data.short_url;
-                    result.classList.add('show');
-                    document.getElementById('customCode').value = '';
-                    document.getElementById('totalLinks').textContent = data.total;
-                    if (document.getElementById('linkList').style.display !== 'none') {
-                        loadLinks();
-                    }
-                } else {
-                    error.textContent = data.error || 'Something went wrong!';
-                    error.classList.add('show');
-                }
-            } catch (err) {
-                loading.classList.remove('show');
-                error.textContent = 'Network error! Please try again.';
-                error.classList.add('show');
-            }
-        });
-        
-        function copyToClipboard() {
-            const input = document.getElementById('shortUrl');
-            input.select();
-            document.execCommand('copy');
-            const btn = document.querySelector('.copy-btn');
-            btn.textContent = '✅ Copied!';
-            setTimeout(() => btn.textContent = '📋 Copy', 2000);
-        }
-
-        // পেজ লোড হলে টোটাল লিংক দেখান
-        loadLinks();
-    </script>
+            })
+            .catch(function() {
+                document.body.innerHTML = '<p style="text-align:center;padding:40px;">লোড করতে সমস্যা হয়েছে</p>';
+            });
+    }
+})();
+</script>
